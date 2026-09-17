@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Overflow Detection Test</title>
+  <style>
+    body {
+      font-family: monospace;
+      padding: 20px;
+      background: #1e293b;
+      color: #e2e8f0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #6366f1;
+      margin-bottom: 20px;
+    }
+    .test-section {
+      background: #334155;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    button {
+      background: #6366f1;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 5px;
+    }
+    button:hover {
+      background: #4f46e5;
+    }
+    #results {
+      background: #1e293b;
+      border: 2px solid #6366f1;
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .error {
+      color: #ef4444;
+      margin: 10px 0;
+      padding: 10px;
+      background: rgba(239, 68, 68, 0.1);
+      border-left: 3px solid #ef4444;
+    }
+    .success {
+      color: #10b981;
+      margin: 10px 0;
+      padding: 10px;
+      background: rgba(16, 185, 129, 0.1);
+      border-left: 3px solid #10b981;
+    }
+    .info {
+      color: #60a5fa;
+      margin: 10px 0;
+      padding: 10px;
+      background: rgba(96, 165, 250, 0.1);
+      border-left: 3px solid #60a5fa;
+    }
+    code {
+      background: #0f172a;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #a78bfa;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Responsive Layout Verification Tool</h1>
+    
+    <div class="test-section">
+      <h2>📱 Test Your Portfolio</h2>
+      <p>Open this file in your browser, then click the buttons below to run tests on <strong>index.html</strong></p>
+      
+      <button onclick="window.open('index.html', '_blank')">Open Portfolio</button>
+      <button onclick="runOverflowTest()">Test for Overflow</button>
+      <button onclick="runViewportTests()">Test All Viewports</button>
+      <button onclick="clearResults()">Clear Results</button>
+    </div>
+
+    <div class="test-section">
+      <h2>📋 Manual Verification Checklist</h2>
+      <p>Test these manually in your browser:</p>
+      <ul>
+        <li>✓ Open index.html in Chrome, Firefox, and Edge</li>
+        <li>✓ Resize window from 320px to 1920px - no horizontal scroll</li>
+        <li>✓ Test mobile menu: open, close, click links, press Escape</li>
+        <li>✓ Tab through all interactive elements - visible focus</li>
+        <li>✓ Test form: all inputs should be 16px or larger</li>
+        <li>✓ All images should maintain aspect ratio</li>
+        <li>✓ Grid should be: 1 col (mobile), 2 cols (768px), 3 cols (1024px)</li>
+      </ul>
+    </div>
+
+    <div class="test-section">
+      <h2>🔧 Browser DevTools Tests</h2>
+      <ol>
+        <li><strong>Chrome DevTools:</strong> F12 → Toggle device toolbar (Ctrl+Shift+M)</li>
+        <li><strong>Test viewports:</strong> 320px, 375px, 768px, 1024px, 1440px</li>
+        <li><strong>Run Lighthouse:</strong> F12 → Lighthouse tab → Mobile → Generate report</li>
+        <li><strong>Check console:</strong> Should have no errors</li>
+        <li><strong>Overflow test:</strong> Paste this in console:</li>
+      </ol>
+      <pre><code>document.querySelectorAll('*').forEach(el => {
+  const r = el.getBoundingClientRect();
+  if (r.right > document.documentElement.clientWidth + 1) {
+    console.log('OVERFLOW:', el, 'right:', r.right);
+  }
+});</code></pre>
+    </div>
+
+    <div class="test-section">
+      <h2>🌐 W3C Validation</h2>
+      <p>Validate your HTML:</p>
+      <ol>
+        <li>Go to <a href="https://validator.w3.org/#validate_by_upload" target="_blank" style="color: #60a5fa;">https://validator.w3.org/#validate_by_upload</a></li>
+        <li>Upload your <code>index.html</code> file</li>
+        <li>Check for errors (warnings are OK)</li>
+      </ol>
+    </div>
+
+    <div id="results"></div>
+  </div>
+
+  <script>
+    const resultsDiv = document.getElementById('results');
+
+    function addResult(message, type = 'info') {
+      const div = document.createElement('div');
+      div.className = type;
+      div.innerHTML = message;
+      resultsDiv.appendChild(div);
+      resultsDiv.scrollTop = resultsDiv.scrollHeight;
+    }
+
+    function clearResults() {
+      resultsDiv.innerHTML = '';
+    }
+
+    function runOverflowTest() {
+      clearResults();
+      addResult('<strong>🔍 Running Overflow Detection Test...</strong>', 'info');
+      addResult('This test needs to run on the actual portfolio page. Opening instructions...', 'info');
+      
+      const instructions = `
+        <strong>Copy and paste this code in the Console of index.html:</strong>
+        <pre style="background: #0f172a; padding: 15px; border-radius: 6px; overflow-x: auto; margin-top: 10px;"><code>// Overflow Detection Script
+let overflowElements = [];
+document.querySelectorAll('*').forEach(el => {
+  const r = el.getBoundingClientRect();
+  const docWidth = document.documentElement.clientWidth;
+  if (r.right > docWidth + 1 || r.left < -1) {
+    overflowElements.push({
+      element: el.tagName + (el.className ? '.' + el.className.split(' ')[0] : ''),
+      left: r.left.toFixed(2),
+      right: r.right.toFixed(2),
+      width: r.width.toFixed(2),
+      docWidth: docWidth
+    });
+  }
+});
+
+if (overflowElements.length === 0) {
+  console.log('%c✓ SUCCESS: No overflow detected!', 'color: #10b981; font-size: 16px; font-weight: bold;');
+} else {
+  console.log('%c✗ OVERFLOW DETECTED:', 'color: #ef4444; font-size: 16px; font-weight: bold;');
+  console.table(overflowElements);
+}
+
+console.log('Document width:', docWidth);
+console.log('Scroll width:', document.documentElement.scrollWidth);</code></pre>
+      `;
+      
+      addResult(instructions, 'info');
+      addResult('📝 <strong>Steps:</strong><br>1. Open index.html in browser<br>2. Press F12 to open DevTools<br>3. Click "Console" tab<br>4. Copy/paste the code above<br>5. Press Enter', 'info');
+    }
+
+    function runViewportTests() {
+      clearResults();
+      addResult('<strong>📱 Viewport Test Instructions</strong>', 'info');
+      
+      const viewports = [
+        { width: 320, name: 'Small Mobile' },
+        { width: 375, name: 'Mobile' },
+        { width: 768, name: 'Tablet' },
+        { width: 1024, name: 'Small Desktop' },
+        { width: 1440, name: 'Desktop' },
+        { width: 1920, name: 'Large Desktop' }
+      ];
+
+      addResult('<strong>Test each viewport size:</strong>', 'info');
+      
+      viewports.forEach(vp => {
+        addResult(`${vp.name}: <code>${vp.width}px</code> - Check layout, no horizontal scroll`, 'info');
+      });
+
+      addResult(`
+        <br><strong>In Chrome DevTools:</strong><br>
+        1. Press F12<br>
+        2. Click device toolbar icon (or Ctrl+Shift+M)<br>
+        3. Select "Responsive" mode<br>
+        4. Test each width listed above<br>
+        5. Verify:<br>
+        &nbsp;&nbsp;- No horizontal scrollbar<br>
+        &nbsp;&nbsp;- All content visible<br>
+        &nbsp;&nbsp;- Text readable<br>
+        &nbsp;&nbsp;- Buttons minimum 44x44px touch target
+      `, 'info');
+    }
+
+    // Auto-display initial instructions
+    window.addEventListener('DOMContentLoaded', () => {
+      addResult('<strong>👋 Welcome to the Verification Tool!</strong>', 'success');
+      addResult('Click the buttons above to run tests and get instructions.', 'info');
+    });
+  </script>
+</body>
+</html>
